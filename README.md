@@ -6,7 +6,7 @@ For instructions on setting up the environment and training models, head to the 
 
 ## Instructions
 
-The code has been tested with Python `3.9.15`. Other Python version might not work.
+The code has been tested with Python `3.9.15` on `Ubuntu 22.04.1`. Other Python versions might not work. Notably, the code does not work on Windows since `jericho`, one of the dependencies, [doesn't support Windows](https://github.com/microsoft/jericho/issues/31).
 
 ```console
 $ python3 --version
