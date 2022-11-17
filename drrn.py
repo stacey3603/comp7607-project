@@ -25,6 +25,7 @@ class DRRN_Agent:
             args.hidden_dim,
             args.fix_rep,
             args.hash_rep,
+            args.hash_func,
             args.act_obs,
         ).to(device)
         self.network.tokenizer = self.tokenizer

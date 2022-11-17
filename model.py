@@ -18,7 +18,14 @@ class DRRN(torch.nn.Module):
     """
 
     def __init__(
-        self, vocab_size, embedding_dim, hidden_dim, fix_rep=0, hash_rep=0, act_obs=0
+        self,
+        vocab_size,
+        embedding_dim,
+        hidden_dim,
+        fix_rep=0,
+        hash_rep=0,
+        hash_func="torch_rng",
+        act_obs=0,
     ):
         super(DRRN, self).__init__()
         self.hidden_dim = hidden_dim
@@ -51,6 +58,7 @@ class DRRN(torch.nn.Module):
 
         self.fix_rep = fix_rep
         self.hash_rep = hash_rep
+        self.hash_func = hash_func
         self.act_obs = act_obs
         self.hash_cache = {}
 
@@ -70,6 +78,12 @@ class DRRN(torch.nn.Module):
         y = torch.stack(y, dim=0).to(device)
         return y
 
+    def sha2_hash(self, x):
+        raise NotImplementedError()
+
+    def sha3_hash(self, x):
+        raise NotImplementedError()
+
     def packed_rnn(self, x, rnn):
         """Runs the provided rnn on the input x. Takes care of packing/unpacking.
 
@@ -77,7 +91,14 @@ class DRRN(torch.nn.Module):
         Returns a tensor of size: len(x) x hidden_dim
         """
         if self.hash_rep:
-            return self.packed_hash(x)
+            if self.hash_func == "torch_rng":
+                return self.packed_hash(x)
+            elif self.hash_func == "sha2":
+                return self.sha2_hash(x)
+            elif self.hash_func == "sha3":
+                return self.sha3_hash(x)
+            else:
+                raise ValueError(f"Unknown hash_func: {self.hash_func}")
         lengths = torch.tensor([len(n) for n in x], dtype=torch.long, device=device)
         # Sort this batch in descending order by seq length
         lengths, idx_sort = torch.sort(lengths, dim=0, descending=True)

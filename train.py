@@ -245,6 +245,12 @@ def parse_args():
         "--hash_rep", default=0, type=int, help="hash for representation"
     )
     parser.add_argument(
+        "--hash_func",
+        default="torch_rng",
+        type=str,
+        help="hash function to use when hash_rep is true",
+    )
+    parser.add_argument(
         "--act_obs", default=0, type=int, help="action set as state representation"
     )
     parser.add_argument("--fix_rep", default=0, type=int, help="fix representation")
