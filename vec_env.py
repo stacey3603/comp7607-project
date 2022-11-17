@@ -42,9 +42,6 @@ class VecEnv:
             for (work_remote, remote) in zip(self.work_remotes, self.remotes)
         ]
         for p in self.ps:
-            p.daemon = (
-                True  # if the main process crashes, we should not cause things to hang
-            )
             p.start()
         for remote in self.work_remotes:
             remote.close()
