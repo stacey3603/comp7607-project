@@ -37,3 +37,29 @@ Install dependencies with:
 ```console
 $ pip3 install -r ./requirements.txt
 ```
+
+### Training models
+
+Train the baseline model:
+
+```console
+$ python3 train.py
+```
+
+Train the "hash input" model from the original paper:
+
+```console
+$ python3 train.py --hash_rep 1 --hash_func torch_rng
+```
+
+Train the new SHA-2 model (with `SHA-512`) introduced here:
+
+```console
+$ python3 train.py --hash_rep 1 --hash_func sha2
+```
+
+Train the new SHA-3 model (with `SHA3-512`) introduced here:
+
+```console
+$ python3 train.py --hash_rep 1 --hash_func sha3
+```
