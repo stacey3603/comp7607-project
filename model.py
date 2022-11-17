@@ -6,6 +6,7 @@ import random
 import itertools
 from util import pad_sequences
 from memory import State
+from hashlib import sha512, sha3_512
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -78,11 +79,32 @@ class DRRN(torch.nn.Module):
         y = torch.stack(y, dim=0).to(device)
         return y
 
+    def crypto_hash(self, x, func_ptr):
+        if self.hidden_dim != 128:
+            raise NotImplementedError("crypto_hash only implemented for hidden_dim=128")
+
+        y = []
+        for items in x:
+            raw_hash = func_ptr(
+                "|".join(str(item) for item in items).encode("utf-8")
+            ).digest()
+            slices = []
+            for ind in range(64):
+                # Each element gets 4 bits
+                high = raw_hash[ind] // 16
+                low = raw_hash[ind] - high * 16
+                slices.append(high)
+                slices.append(low)
+            y.append(torch.Tensor(slices))
+        y = torch.stack(y, dim=0).to(device)
+
+        return y
+
     def sha2_hash(self, x):
-        raise NotImplementedError()
+        return self.crypto_hash(x, sha512)
 
     def sha3_hash(self, x):
-        raise NotImplementedError()
+        return self.crypto_hash(x, sha3_512)
 
     def packed_rnn(self, x, rnn):
         """Runs the provided rnn on the input x. Takes care of packing/unpacking.
